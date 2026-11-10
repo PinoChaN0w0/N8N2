@@ -1,0 +1,9 @@
+
+CREATE TABLE public.financial_data (
+  id SERIAL PRIMARY KEY,
+  category varchar(30) NOT NULL CHECK (category IN ('crypto','afp')),
+  name varchar(150) NOT NULL,
+  value_1 numeric(20,8),
+  value_2 numeric(10,4),
+  captured_at timestamptz NOT NULL DEFAULT now()
+);

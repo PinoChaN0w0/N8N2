@@ -1,0 +1,254 @@
+{
+  "name": "My Sub-Workflow 1",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "robot_afp"
+            }
+          ]
+        }
+      },
+      "id": "7ef4fc2e-9a56-48d1-9f63-60a369f69941",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python C:\\n8n\\robot_afp.py"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "d9e5b69a-af01-4e9c-a2d2-f7bb0b71c778",
+      "name": "Execute Command"
+    },
+    {
+      "parameters": {
+        "jsCode": "var data = $input.first().json.stdout;\nvar salida = [];\n\nfor (const element of JSON.parse(data)) {\n  var rentabilidad = element.rentabilidad;\n  rentabilidad = rentabilidad.replace(\"%\", \"\");\n  rentabilidad = rentabilidad.replace(\"+\", \"\");\n\n  salida.push(\n    {\n      name : element.name,\n      rentabilidad : rentabilidad\n    }\n  );\n}\n\nreturn salida;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        0
+      ],
+      "id": "70a2ea4f-4ad3-49fd-8e13-59ea077f3858",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.2,
+      "position": [
+        864,
+        0
+      ],
+      "id": "9002f1e8-deaa-4ee5-bd60-e5146628c2dc",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "datos_afp.csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1072,
+        0
+      ],
+      "id": "73403665-cba7-46b6-b7b5-2429b9bd9c3a",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "financial_data",
+          "mode": "list",
+          "cachedResultName": "financial_data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "category": "afp",
+            "name": "={{ $json.name }}",
+            "value_1": "={{ $json.rentabilidad }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "value_1",
+              "displayName": "value_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "value_2",
+              "displayName": "value_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "captured_at",
+              "displayName": "captured_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        656,
+        0
+      ],
+      "id": "77a57c25-9b10-430f-91f7-f37b30705dd7",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "ym9vj2Y1cv1Jv5IP",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        []
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "423aff4b-06ec-4c60-ba38-470827d2c338",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c8c92b911db4ac721cab95b6efa0118f609a77f78662a9ca61862aeeaa2e67d7"
+  },
+  "nodeGroups": [],
+  "id": "CiQ0ytQHHkBpp0RX",
+  "tags": []
+}

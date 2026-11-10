@@ -1,0 +1,298 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "58b869d1-fbb8-4f41-b7e9-b768713316c7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "command": "python C:\\n8n\\robot_crypto.py"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "f4c1a84f-7d1d-4968-a972-cdd54708caa9",
+      "name": "Execute Command"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\n8n\\datos_crypto.csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        0
+      ],
+      "id": "768b7f0b-ab37-40b2-acd2-f5f7a4a6ffb0",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "options": {
+          "delimiter": ";"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        0
+      ],
+      "id": "38a352bd-3ba5-42aa-ae70-ef7c21166de5",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "jsCode": "var data = $input.first().json.stdout;\nvar salida= [];\nlet  i = 0;\nfor (const element of JSON.parse(data)) {\n  let variacion = element.variacion7;\n  variacion     = variacion.replace(\"%\", \"\");\n  let price     = element.price;\n  price         = price.replace(\"$\",\"\");\n  price         = price.replace(\",\", \"\");\n  i++;\n  if(i <= 3){\n    salida.push(\n     {\n       variacion : variacion,\n       price : price,\n       name  : element.name,\n       \n     }\n   );\n  }\n   \n  \n}\n\nreturn salida;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "60f1927b-e3af-4155-804e-4c618d62617d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "CiQ0ytQHHkBpp0RX",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/CiQ0ytQHHkBpp0RX",
+          "cachedResultName": "My Sub-Workflow 1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "robot_afp"
+          ],
+          "schema": [
+            {
+              "id": "robot_afp",
+              "displayName": "robot_afp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1376,
+        0
+      ],
+      "id": "25c00dd4-427c-475f-bc35-406905ab9c72",
+      "name": "Call 'My Sub-Workflow 1'"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "financial_data",
+          "mode": "list",
+          "cachedResultName": "financial_data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "category": "crypto",
+            "name": "={{ $json.name }}",
+            "value_1": "=",
+            "value_2": "={{ $json.price }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "value_1",
+              "displayName": "value_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "value_2",
+              "displayName": "value_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "captured_at",
+              "displayName": "captured_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        704,
+        0
+      ],
+      "id": "355ecd6a-78a9-477a-a4fc-66b60198ba2a",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "ym9vj2Y1cv1Jv5IP",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Call 'My Sub-Workflow 1'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "50bfa6f4-e9aa-46d2-908d-9a38fe21c73c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c8c92b911db4ac721cab95b6efa0118f609a77f78662a9ca61862aeeaa2e67d7"
+  },
+  "nodeGroups": [],
+  "id": "bLYXAIaa7IeUecex",
+  "tags": []
+}
